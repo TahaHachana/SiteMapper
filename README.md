@@ -4,7 +4,7 @@ SiteMapper
 About
 -----
 
-A Sitemap generation application intended to boe one of the demos of the functionality provided by the SEO library available here: https://github.com/TahaHachana/SEOLib.
+A Sitemap generation application intended to be one of the demos of the functionality provided by the SEO library available here: https://github.com/TahaHachana/SEOLib.
 
 License
 -------
