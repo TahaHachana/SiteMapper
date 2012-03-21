@@ -4,12 +4,12 @@ open System
 open System.Collections.Concurrent
 open System.IO
 open System.Text.RegularExpressions
-open System.Xml.Linq
 open System.Windows
 open System.Windows.Controls
-open Types
-open SEOLib.Types
+open System.Xml.Linq
 open SEOLib.Links
+open SEOLib.Types
+open Types
 
 module Utilities =
 
@@ -36,7 +36,7 @@ module Utilities =
             loop())
 
     /// Sends progress messages to an agent.
-    let reportProgress (agent : MailboxProcessor<Message'>) msg = agent.Post <| Progress msg
+    let reportProgress (agent : Message'Agent) msg = agent.Post <| Progress msg
 
     /// Displays a message box in front of the specified window.
     let displayMsgBox (window : Window) msg = MessageBox.Show(window, msg) |> ignore
@@ -69,15 +69,16 @@ module Utilities =
 
     let tryCreateUri'' = tryCreateUri >> tryCreateUri'
 
-    // URL canonicalization: example.com -> http://www.example.com/
+    /// Canonicalizes a URL: example.com -> http://www.example.com/
     let canonicalize url = tryCreateUri'' url
 
+    /// Returns the host of a URL.
     let hostFromUrl url =
         let uri = Uri url
         uri.Host
 
     let xname str = XName.Get str
-    let sitemapsNamespace = XNamespace.Get("http://www.sitemaps.org/schemas/sitemap/0.9")
+    let sitemapsNamespace = XNamespace.Get "http://www.sitemaps.org/schemas/sitemap/0.9"
     let createElement (ns : XNamespace) name (value : string) = XElement(ns + name, value)
     let createElement' = createElement sitemapsNamespace
     let rand = Random()
@@ -85,7 +86,7 @@ module Utilities =
     let addElement (xelem : XElement) (xelem' : XElement option) =
         match xelem' with
             | Some xelem'' -> xelem.Add xelem''
-            | None -> ()
+            | None         -> ()
 
     let desktopPath = Environment.GetFolderPath Environment.SpecialFolder.Desktop
     let desktopPath' = Path.Combine(desktopPath, "Sitemap")
@@ -95,9 +96,9 @@ module Utilities =
         doc.Declaration <- XDeclaration("1.0", "UTF-8", "true")
         doc
 
-    let collectLinks onlyInternal (agent : MailboxProcessor<Message'>) (bag : ConcurrentBag<WebPage>) url host =
+    let collectLinks onlyInternal (agent : Message'Agent) (bag : ConcurrentBag<WebPage>) url host =
             let webPage = fetchUrl url
-            let msg = sprintf "Crawling: %s\n" url |> Message'.Progress
+            let msg = sprintf "Crawling: %s\n" url |> Progress
             agent.Post msg
             match webPage with
                 | Some webPage' ->
@@ -114,5 +115,7 @@ module Utilities =
                 | None -> []
 
     let ghostAgent = new MessageAgent(fun _ -> async { do () })
-        
+    
+    // A reference cell for holding the cancling agent responsible for
+    // instructing the crawler to cancel exploring the Web site.    
     let agent = ref ghostAgent
