@@ -5,28 +5,27 @@ open System.Windows
 open System.Windows.Controls
 open Types
 open Utilities
+open FSharpx
 
 module GUI =
 
-    let window =
-        let uri = Uri("/SiteMapper;component/Window1.xaml", UriKind.Relative)
-        Application.LoadComponent uri :?> Window
-
-    let findControl' = findControl window
-
-    let cancelButton    = findControl' "cancel"     :?> Button
-    let changeFreqCombo = findControl' "changeFreq" :?> ComboBox
-    let lastModNone     = findControl' "lmNone"     :?> RadioButton
-    let lastModUtc      = findControl' "lmUtc"      :?> RadioButton
-    let lastModWeb      = findControl' "lmWebResp"  :?> RadioButton
-    let priorityExact   = findControl' "prioExact"  :?> RadioButton
-    let priorityNone    = findControl' "prioNone"   :?> RadioButton
-    let priorityRand    = findControl' "prioRand"   :?> RadioButton
-    let priorityTextbox = findControl' "prioVal"    :?> TextBox 
-    let progressTextbox = findControl' "progress"   :?> TextBox
-    let startButton     = findControl' "start"      :?> Button
-    let urlTextbox      = findControl' "url"        :?> TextBox
-    let utcTextbox      = findControl' "utc"        :?> TextBox
+    type MainWindow = XamlFile<"Window1.xaml">
+    
+    let mainWindow      = MainWindow()
+    let window          = mainWindow.Control
+    let cancelButton    = mainWindow.Cancel.Control
+    let changeFreqCombo = mainWindow.ChangeFreq.Control
+    let lastModNone     = mainWindow.LmNone.Control
+    let lastModUtc      = mainWindow.LmUtc.Control
+    let lastModWeb      = mainWindow.LmWebResp.Control
+    let priorityExact   = mainWindow.PrioExact.Control
+    let priorityNone    = mainWindow.PrioNone.Control
+    let priorityRand    = mainWindow.PrioRand.Control
+    let priorityTextbox = mainWindow.PrioVal.Control 
+    let progressTextbox = mainWindow.Progress.Control
+    let startButton     = mainWindow.Start.Control
+    let urlTextbox      = mainWindow.Url.Control
+    let utcTextbox      = mainWindow.Utc.Control
 
     // Set the focus on the URL textbox.
     urlTextbox.Focus() |> ignore
