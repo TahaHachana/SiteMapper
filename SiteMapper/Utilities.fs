@@ -60,7 +60,7 @@ module Utilities =
             | Some x' ->
                 let host = x'.Host
                 let path = x'.AbsolutePath
-                let host' = Regex(domainNamePattern, RegexOptions.RightToLeft).Match(host).Value
+                let host' = domainNameRegex.Match(host).Value
                 let pattern = "(?i)^https?://((www\.)|([^\.]+\.))" + Regex.Escape(host') + "[^\"]*"
                 let isMatch = Regex(pattern).IsMatch(string x')
                 match isMatch with
@@ -80,7 +80,7 @@ module Utilities =
 
     let xname str = XName.Get str
     let sitemapsNamespace = XNamespace.Get "http://www.sitemaps.org/schemas/sitemap/0.9"
-    let createElement (ns : XNamespace) name (value : string) = XElement(ns + name, value)
+    let createElement ns name (value : string) = XElement(ns + name, value)
     let createElement' = createElement sitemapsNamespace
     let rand = Random()
 
@@ -89,7 +89,7 @@ module Utilities =
             | Some xelem'' -> xelem.Add xelem''
             | None         -> ()
 
-    let desktopPath = Environment.GetFolderPath Environment.SpecialFolder.Desktop
+    let desktopPath  = Environment.GetFolderPath Environment.SpecialFolder.Desktop
     let desktopPath' = Path.Combine(desktopPath, "Sitemap")
 
     let createXdocument() =
