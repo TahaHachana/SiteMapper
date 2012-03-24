@@ -11,6 +11,6 @@ module AssemblyInfo =
     [<AssemblyFileVersion("0.1.0.0")>]
     [<AssemblyProduct("SiteMapper")>]
     [<AssemblyTitle("SiteMapper")>]
-    [<AssemblyVersion("0.3.0.0")>]
+    [<AssemblyVersion("0.4.0.0")>]
 
     do ()
