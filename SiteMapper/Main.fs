@@ -2,16 +2,12 @@
 
 open System
 open System.IO
-open System.Text.RegularExpressions
 open System.Threading
 open System.Windows
+open SEOLib.Types
 open GUI
-//open Links
-//open Crawler
 open Sitemap
 open Utilities
-open Types
-open SEOLib.Types
 
 module main =
 
@@ -19,23 +15,21 @@ module main =
     module EventHandling =
         let checkUrl() =
             let url = urlTextbox.Text
-            let isUrl str = Regex(domainNamePattern, RegexOptions.RightToLeft).IsMatch str
+            let isUrl str = domainNameRegex.IsMatch str
             match url with
                 | ""   -> None
                 | url' ->
                     let isValidUrl = isUrl url'
                     match isValidUrl with
                         | false -> None
-                        | true  ->
-                            let url'' = canonicalize url'
-                            Some url''
+                        | true  -> Some <| canonicalize url'
 
         let checkUtcValue() =
             let utcValue = utcTextbox.Text
             try
                 let dt = DateTime.TryParse(utcValue)
                 match dt with
-                    | true, x -> x.ToUniversalTime() |> Some
+                    | true, x -> Some <| x.ToUniversalTime()
                     | _       -> None
             with
                 | _ -> None
@@ -47,8 +41,7 @@ module main =
                 if   priorityValue'' > 1. then None
                 elif priorityValue'' < 0. then None
                 else Some priorityValue''
-            with
-                | _ -> None
+            with _ -> None
 
         let generateSitemap' url context =
             try generateSitemap url context |> Async.Start
@@ -74,23 +67,22 @@ module main =
 
         let handleClick _ =
             progressTextbox.Clear()
-            let url = checkUrl()
+            let url      = checkUrl()
             let utcValue = checkUtcValue()
             let priority = checkPriority()
-            let context = SynchronizationContext.Current
+            let context  = SynchronizationContext.Current
             processUrl url utcValue priority context
 
         startButton.Click |> Event.add handleClick
 
         cancelButton.Click |> Event.add (fun _ ->
+            cancelButton.IsEnabled <- false
             let cancelingAgent = !agent
             cancelingAgent.Post Cancel
             progressTextbox.AppendText "Cancelling...\n"
             showMsg "Sitemap generation was canceled."
             )
 
-        let desktopPath = Environment.GetFolderPath Environment.SpecialFolder.Desktop
-        let desktopPath' = Path.Combine(desktopPath, "Sitemap")
         do Directory.CreateDirectory desktopPath' |> ignore
 
     module App =

@@ -53,6 +53,7 @@ module Utilities =
                     | _       -> None
 
     let domainNamePattern = "[^\.]+\.\w{2,3}(\.\w{2})?"
+    let domainNameRegex   = Regex(domainNamePattern, RegexOptions.RightToLeft)
 
     let tryCreateUri' (x : Uri option) =
         match x with
