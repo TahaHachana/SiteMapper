@@ -1,7 +1,7 @@
 ﻿namespace SiteMapper
 
-open Types
 open GUI
+open Types
 open Utilities
 
 module Settings =

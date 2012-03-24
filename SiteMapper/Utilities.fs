@@ -119,3 +119,5 @@ module Utilities =
     // A reference cell for holding the cancling agent responsible for
     // instructing the crawler to cancel exploring the Web site.    
     let agent = ref ghostAgent
+
+    let robotsMsg = Progress "Fetching the robots.txt file...\n"
