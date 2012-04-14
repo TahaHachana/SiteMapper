@@ -97,24 +97,6 @@ module Utilities =
         doc.Declaration <- XDeclaration("1.0", "UTF-8", "true")
         doc
 
-    let collectLinks onlyInternal (agent : Message'Agent) (bag : ConcurrentBag<WebPage>) url host =
-            let webPage = fetchUrl url
-            let msg = sprintf "Crawling: %s\n" url |> Progress
-            agent.Post msg
-            match webPage with
-                | Some webPage' ->
-                    let isNoIndex = webPage'.ResponseUri.IsNone
-                    match isNoIndex with
-                        | true  -> ()
-                        | false -> bag.Add webPage'
-                    let isNoFollow = webPage'.NoFollow
-                    match isNoFollow with
-                        | true  -> []
-                        | false ->
-                            let html = webPage'.HTML
-                            scrapeLinks host html onlyInternal
-                | None -> []
-
     let ghostAgent = new MessageAgent(fun _ -> async { do () })
     
     // A reference cell for holding the cancling agent responsible for
