@@ -5,11 +5,14 @@ open System.Collections.Generic
 open System.IO
 open System.Xml.Linq
 open SEOLib.Crawler
+open SEOLib.Robots
+open SEOLib.Links
 open SEOLib.Types
 open GUI
 open Settings
 open Types
 open Utilities
+open System.Net.Http
 
 module Sitemap =
 
@@ -17,9 +20,9 @@ module Sitemap =
     let genEntry webPage settings =
         let lm =
             webPage.Headers
-            |> List.tryFind (fun x -> fst x = "Last-Modified")
-            |> function Some x -> snd x | None -> ""
-        let url = webPage.ResponseUri.Value.ToString()
+            |> Seq.tryFind (fun x -> x.Key = "Last-Modified")
+            |> function Some x -> x.Value |> Seq.nth 0 | None -> ""
+        let url = webPage.Url //.ResponseUri.Value.ToString()
         let urlElement = XElement(sitemapsNamespace + "url")
         let addElement' = addElement urlElement
         createElement' "loc" url |> Some |> addElement'
@@ -57,9 +60,11 @@ module Sitemap =
         async {
             let progressReporter' = progressReporter context progressTextbox
             progressReporter'.Post robotsMsg
-            let q = ConcurrentQueue<string>()
-            let set = HashSet<string>()
             let bag = ConcurrentBag<WebPage>()
+            let fWebPage (webPage : WebPage) =
+                let msg = sprintf "Crawling: %s\n" webPage.Url |> Progress
+                progressReporter'.Post msg
+                bag.Add webPage
             let f =
                 async {
                         let elements = bag |> Seq.map (fun x -> genEntry x settings)
@@ -69,7 +74,6 @@ module Sitemap =
                         progressReporter'.Post Message'.Done
                         showMsg "Sitemap generation was successfully completed."
                     }
-            let collectLinks' = collectLinks true progressReporter' bag
-            let canceler = crawl url None f collectLinks'
+            let canceler = crawl url None f fWebPage true OFF
             agent := canceler
-        }
+            }
