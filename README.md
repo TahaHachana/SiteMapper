@@ -4,7 +4,7 @@ SiteMapper
 About
 -----
 
-A Sitemap generator intended to be a demo of this [F# Web crawler project](https://github.com/TahaHachana/Webot/ "F# Web crawler"). The application leverages also the XAML type provider from the [FSharpx project](https://github.com/fsharp/fsharpx "FSharpx").
+A Sitemap generator intended to be a demo for this [F# Web crawler project](https://github.com/TahaHachana/Spidy "F# Web crawler"). The application also leverages the XAML type provider from the [FSharpx project](https://github.com/fsharp/fsharpx "FSharpx").
 
 MIT License
 -----------
