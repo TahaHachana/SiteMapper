@@ -7,14 +7,10 @@ open System.Text.RegularExpressions
 open System.Windows
 open System.Windows.Controls
 open System.Xml.Linq
-open SEOLib.Links
-open SEOLib.Types
+open Spidy.Types
 open Types
 
 module Utilities =
-
-    /// Finds a control in a window by its name.
-    let findControl (window : Window) name = window.FindName name
 
     /// Spawns an agent that appends strings to the contents of a textbox.
     let progressReporter context (textbox : TextBox) =

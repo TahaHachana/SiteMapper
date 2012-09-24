@@ -1,6 +1,6 @@
 ﻿namespace SiteMapper
 
-open SEOLib.Types
+open Spidy.Types
 
 module Types =
 

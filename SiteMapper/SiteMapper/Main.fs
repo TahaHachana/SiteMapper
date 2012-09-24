@@ -4,7 +4,7 @@ open System
 open System.IO
 open System.Threading
 open System.Windows
-open SEOLib.Types
+open Spidy.Types
 open GUI
 open Sitemap
 open Utilities

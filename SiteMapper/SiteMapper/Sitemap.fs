@@ -1,28 +1,26 @@
 ﻿namespace SiteMapper
 
+open System
 open System.Collections.Concurrent
 open System.Collections.Generic
 open System.IO
 open System.Xml.Linq
-open SEOLib.Crawler
-open SEOLib.Robots
-open SEOLib.Links
-open SEOLib.Types
+open Spidy.Crawler
+open Spidy.Types
 open GUI
 open Settings
 open Types
 open Utilities
-open System.Net.Http
 
 module Sitemap =
 
     /// Generates a Sitemap entry.
-    let genEntry webPage settings =
+    let genEntry httpData settings =
         let lm =
-            webPage.Headers
+            httpData.Headers
             |> Seq.tryFind (fun x -> x.Key = "Last-Modified")
             |> function Some x -> x.Value |> Seq.nth 0 | None -> ""
-        let url = webPage.Url //.ResponseUri.Value.ToString()
+        let url = httpData.RequestUri
         let urlElement = XElement(sitemapsNamespace + "url")
         let addElement' = addElement urlElement
         createElement' "loc" url |> Some |> addElement'
@@ -60,11 +58,13 @@ module Sitemap =
         async {
             let progressReporter' = progressReporter context progressTextbox
             progressReporter'.Post robotsMsg
-            let bag = ConcurrentBag<WebPage>()
-            let fWebPage (webPage : WebPage) =
-                let msg = sprintf "Crawling: %s\n" webPage.Url |> Progress
-                progressReporter'.Post msg
-                bag.Add webPage
+            let bag = ConcurrentBag<HttpData>()
+            let fHttpData (httpData : HttpData) =
+                async {
+                    let msg = sprintf "Crawling: %s\n" httpData.RequestUri |> Progress
+                    progressReporter'.Post msg
+                    bag.Add httpData
+                }
             let f =
                 async {
                         let elements = bag |> Seq.map (fun x -> genEntry x settings)
@@ -74,6 +74,17 @@ module Sitemap =
                         progressReporter'.Post Message'.Done
                         showMsg "Sitemap generation was successfully completed."
                     }
-            let canceler = crawl url None f fWebPage true OFF
+            let seed = Uri url
+            let config =
+                {
+                    Seeds          = [seed]
+                    Depth          = None
+                    Limit          = None
+                    AllowedHosts   = Some [seed.Host]
+                    RogueMode      = RogueMode.OFF
+                    HttpDataFunc   = fHttpData
+                    CompletionFunc = f
+                }
+            let! canceler = crawl config
             agent := canceler
             }
