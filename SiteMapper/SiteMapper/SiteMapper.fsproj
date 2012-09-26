@@ -42,8 +42,8 @@
       <HintPath>..\packages\FSharpx.TypeProviders.1.6.29\lib\45\Fsharpx.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FSharpx.TypeProviders">
-      <HintPath>..\packages\FSharpx.TypeProviders.1.6.29\lib\45\Fsharpx.TypeProviders.dll</HintPath>
+    <Reference Include="FSharpx.TypeProviders.Xaml">
+      <HintPath>..\packages\FSharpx.TypeProviders.Xaml.1.6.77\lib\40\Fsharpx.TypeProviders.Xaml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
